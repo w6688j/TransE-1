@@ -1,8 +1,10 @@
 from numpy import *
 import operator
 
+
 class Test:
-    def __init__(self, entityList, entityVectorList, relationList ,relationVectorList, tripleListTrain, tripleListTest, label = "head", isFit = False):
+    def __init__(self, entityList, entityVectorList, relationList, relationVectorList, tripleListTrain, tripleListTest,
+                 label="head", isFit=False):
         self.entityList = {}
         self.relationList = {}
         for name, vec in zip(entityList, entityVectorList):
@@ -34,13 +36,15 @@ class Test:
                     corruptedTriplet = (entityTemp, triplet[1], triplet[2])
                     if self.isFit and (corruptedTriplet in self.tripleListTrain):
                         continue
-                    rankList[entityTemp] = distance(self.entityList[entityTemp], self.entityList[triplet[1]], self.relationList[triplet[2]])
-                else:#
+                    rankList[entityTemp] = distance(self.entityList[entityTemp], self.entityList[triplet[1]],
+                                                    self.relationList[triplet[2]])
+                else:  #
                     corruptedTriplet = (triplet[0], entityTemp, triplet[2])
                     if self.isFit and (corruptedTriplet in self.tripleListTrain):
                         continue
-                    rankList[entityTemp] = distance(self.entityList[triplet[0]], self.entityList[entityTemp], self.relationList[triplet[2]])
-            nameRank = sorted(rankList.items(), key = operator.itemgetter(1))
+                    rankList[entityTemp] = distance(self.entityList[triplet[0]], self.entityList[entityTemp],
+                                                    self.relationList[triplet[2]])
+            nameRank = sorted(rankList.items(), key=operator.itemgetter(1))
             if self.label == 'head':
                 numTri = 0
             else:
@@ -65,8 +69,9 @@ class Test:
                 corruptedTriplet = (triplet[0], triplet[1], relationTemp)
                 if self.isFit and (corruptedTriplet in self.tripleListTrain):
                     continue
-                rankList[relationTemp] = distance(self.entityList[triplet[0]], self.entityList[triplet[1]], self.relationList[relationTemp])
-            nameRank = sorted(rankList.items(), key = operator.itemgetter(1))
+                rankList[relationTemp] = distance(self.entityList[triplet[0]], self.entityList[triplet[1]],
+                                                  self.relationList[relationTemp])
+            nameRank = sorted(rankList.items(), key=operator.itemgetter(1))
             x = 1
             for i in nameRank:
                 if i[0] == triplet[2]:
@@ -82,7 +87,7 @@ class Test:
         num = 0
         for r in self.rank:
             num += r[3]
-        return num/len(self.rank)
+        return num / len(self.rank)
 
 
 def distance(h, t, r):
@@ -92,20 +97,22 @@ def distance(h, t, r):
     s = h + r - t
     return linalg.norm(s)
 
+
 def openD(dir, sp="\t"):
-    #triple = (head, tail, relation)
+    # triple = (head, tail, relation)
     num = 0
     list = []
     with open(dir) as file:
         lines = file.readlines()
         for line in lines:
             triple = line.strip().split(sp)
-            if(len(triple)<3):
+            if (len(triple) < 3):
                 continue
             list.append(tuple(triple))
             num += 1
     print(num)
     return num, list
+
 
 def loadData(str):
     fr = open(str)
@@ -114,39 +121,43 @@ def loadData(str):
     nameArr = [line[0] for line in sArr]
     return datArr, nameArr
 
+
 if __name__ == '__main__':
-    dirTrain = "C:\\data\\train.txt"
+    dirTrain = "KBdata/FB15k/train.txt"
     tripleNumTrain, tripleListTrain = openD(dirTrain)
-    dirTest = "C:\\data\\test.txt"
+    dirTest = "KBdata/FB15k/test.txt"
     tripleNumTest, tripleListTest = openD(dirTest)
-    dirEntityVector = "c:\\entityVector.txt"
+    dirEntityVector = "result/entityVector.txt"
     entityVectorList, entityList = loadData(dirEntityVector)
-    dirRelationVector = "c:\\relationVector.txt"
+    dirRelationVector = "result/relationVector.txt"
     relationVectorList, relationList = loadData(dirRelationVector)
     print("kaishitest")
 
     testHeadRaw = Test(entityList, entityVectorList, relationList, relationVectorList, tripleListTrain, tripleListTest)
     testHeadRaw.getRank()
     print(testHeadRaw.getMeanRank())
-    testHeadRaw.writeRank("c:\\" + "testHeadRaw" + ".txt")
+    testHeadRaw.writeRank("result/testHeadRaw.txt")
     testHeadRaw.getRelationRank()
     print(testHeadRaw.getMeanRank())
-    testHeadRaw.writeRank("c:\\" + "testRelationRaw" + ".txt")
+    testHeadRaw.writeRank("result/testRelationRaw.txt")
 
-    testTailRaw = Test(entityList, entityVectorList, relationList, relationVectorList, tripleListTrain, tripleListTest, label = "tail")
+    testTailRaw = Test(entityList, entityVectorList, relationList, relationVectorList, tripleListTrain, tripleListTest,
+                       label="tail")
     testTailRaw.getRank()
     print(testTailRaw.getMeanRank())
-    testTailRaw.writeRank("c:\\" + "testTailRaw" + ".txt")
+    testTailRaw.writeRank("result/testTailRaw.txt")
 
-    testHeadFit = Test(entityList, entityVectorList, relationList, relationVectorList, tripleListTrain, tripleListTest, isFit = True)
+    testHeadFit = Test(entityList, entityVectorList, relationList, relationVectorList, tripleListTrain, tripleListTest,
+                       isFit=True)
     testHeadFit.getRank()
     print(testHeadFit.getMeanRank())
-    testHeadFit.writeRank("c:\\" + "testHeadFit" + ".txt")
+    testHeadFit.writeRank("result/testHeadFit.txt")
     testHeadFit.getRelationRank()
     print(testHeadFit.getMeanRank())
-    testHeadFit.writeRank("c:\\" + "testRelationFit" + ".txt")
+    testHeadFit.writeRank("result/testRelationFit.txt")
 
-    testTailFit = Test(entityList, entityVectorList, relationList, relationVectorList, tripleListTrain, tripleListTest, isFit = True, label = "tail")
+    testTailFit = Test(entityList, entityVectorList, relationList, relationVectorList, tripleListTrain, tripleListTest,
+                       isFit=True, label="tail")
     testTailFit.getRank()
     print(testTailFit.getMeanRank())
-    testTailFit.writeRank("c:\\" + "testTailFit" + ".txt")
+    testTailFit.writeRank("result/testTailFit.txt")

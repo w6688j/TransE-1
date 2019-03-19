@@ -1,5 +1,6 @@
 from tranE import *
 
+
 def loadData(str):
     fr = open(str)
     sArr = [line.strip().split("\t") for line in fr.readlines()]
@@ -10,14 +11,15 @@ def loadData(str):
         dic[name] = vec
     return dic
 
+
 if __name__ == '__main__':
-    dirEntityVector = "c:\\entityVector.txt"
+    dirEntityVector = "result/entityVector.txt"
     entityList = loadData(dirEntityVector)
-    dirRelationVector = "c:\\relationVector.txt"
+    dirRelationVector = "result/relationVector.txt"
     relationList = loadData(dirRelationVector)
-    dirTrain = "C:\\data\\train.txt"
+    dirTrain = "KBdata/FB15k/train.txt"
     tripleNum, tripleList = openTrain(dirTrain)
-    transE = TransE(entityList, relationList, tripleList, learingRate = 0.001, dim = 30)
+    transE = TransE(entityList, relationList, tripleList, learingRate=0.001, dim=30)
     transE.transE(100000)
-    transE.writeRelationVector("c:\\relationVector.txt")
-    transE.writeEntilyVector("c:\\entityVector.txt")
+    transE.writeRelationVector("result/relationVector.txt")
+    transE.writeEntilyVector("result/entityVector.txt")
