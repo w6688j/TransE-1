@@ -1,0 +1,4 @@
+Comparison  0
+Contingency 1
+Temporal    2
+Expansion   3
