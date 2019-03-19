@@ -123,9 +123,9 @@ def loadData(str):
 
 
 if __name__ == '__main__':
-    dirTrain = "KBdata/FB15k/train.txt"
+    dirTrain = "KBdata/FB15k/train_pdtb.txt"
     tripleNumTrain, tripleListTrain = openD(dirTrain)
-    dirTest = "KBdata/FB15k/test.txt"
+    dirTest = "KBdata/FB15k/test_pdtb.txt"
     tripleNumTest, tripleListTest = openD(dirTest)
     dirEntityVector = "result/entityVector.txt"
     entityVectorList, entityList = loadData(dirEntityVector)

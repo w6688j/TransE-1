@@ -1,6 +1,7 @@
 from random import uniform, sample
 from numpy import *
 from copy import deepcopy
+from common import create_word_index
 
 
 class TransE:
@@ -18,8 +19,17 @@ class TransE:
         '''
         初始化向量
         '''
+        _, d_word_index, embed, _ = create_word_index('glove/glove.6B.100d.txt', 100, 5)
+
         entityVectorList = {}
         relationVectorList = {}
+        # for entity in self.entityList:
+        #     entityVectorList[entity] = embed[d_word_index[entity]]
+        #     print(entityVectorList)
+        #     exit()
+        # print("entityVector初始化完成，数量是%d" % len(entityVectorList))
+        # for relation in self.relationList:
+        #     relationVectorList[relation] = embed[d_word_index[relation]]
         for entity in self.entityList:
             n = 0
             entityVector = []
@@ -235,16 +245,16 @@ def openTrain(dir, sp="\t"):
 
 
 if __name__ == '__main__':
-    dirEntity = "KBdata/FB15k/entity2id.txt"
+    dirEntity = "KBdata/PDTB/sentence_entity.txt"
     entityIdNum, entityList = openDetailsAndId(dirEntity)
     dirRelation = "KBdata/FB15k/relation2id.txt"
     relationIdNum, relationList = openDetailsAndId(dirRelation)
-    dirTrain = "KBdata/FB15k/train.txt"
+    dirTrain = "KBdata/PDTB/train.txt"
     tripleNum, tripleList = openTrain(dirTrain)
     print("打开TransE")
     transE = TransE(entityList, relationList, tripleList, margin=1, dim=100)
     print("TranE初始化")
     transE.initialize()
     transE.transE(15000)
-    transE.writeRelationVector("result/relationVector.txt")
-    transE.writeEntilyVector("result/entityVector.txt")
+    transE.writeRelationVector("result/relationVector_pdtb.txt")
+    transE.writeEntilyVector("result/entityVector_pdtb.txt")

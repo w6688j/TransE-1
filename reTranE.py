@@ -17,7 +17,7 @@ if __name__ == '__main__':
     entityList = loadData(dirEntityVector)
     dirRelationVector = "result/relationVector.txt"
     relationList = loadData(dirRelationVector)
-    dirTrain = "KBdata/FB15k/train.txt"
+    dirTrain = "KBdata/FB15k/train_pdtb.txt"
     tripleNum, tripleList = openTrain(dirTrain)
     transE = TransE(entityList, relationList, tripleList, learingRate=0.001, dim=30)
     transE.transE(100000)
