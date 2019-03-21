@@ -1,17 +1,20 @@
 from random import uniform, sample
 from numpy import *
+import numpy as np
 from copy import deepcopy
-from common import create_word_index
+from vocab import VocabBuilder
 
 
 class TransE:
-    def __init__(self, entityList, relationList, tripleList, margin=1, learingRate=0.00001, dim=10, L1=True):
+    def __init__(self, entityList, relationList, tripleList, sentenceDict, margin=1, learingRate=0.00001, dim=10,
+                 L1=True):
         self.margin = margin
         self.learingRate = learingRate
         self.dim = dim  # 向量维度
         self.entityList = entityList  # 一开始，entityList是entity的list；初始化后，变为字典，key是entity，values是其向量（使用narray）。
         self.relationList = relationList  # 理由同上
         self.tripleList = tripleList  # 理由同上
+        self.sentenceDict = sentenceDict  # 理由同上
         self.loss = 0
         self.L1 = L1
 
@@ -19,26 +22,34 @@ class TransE:
         '''
         初始化向量
         '''
-        _, d_word_index, embed, _ = create_word_index('glove/glove.6B.100d.txt', 100, 5)
-
+        wordVectorList = {}
         entityVectorList = {}
         relationVectorList = {}
-        # for entity in self.entityList:
-        #     entityVectorList[entity] = embed[d_word_index[entity]]
-        #     print(entityVectorList)
-        #     exit()
-        # print("entityVector初始化完成，数量是%d" % len(entityVectorList))
-        # for relation in self.relationList:
-        #     relationVectorList[relation] = embed[d_word_index[relation]]
-        for entity in self.entityList:
+        for word in self.entityList:
             n = 0
-            entityVector = []
+            wordVector = []
             while n < self.dim:
                 ram = init(self.dim)  # 初始化的范围
-                entityVector.append(ram)
+                wordVector.append(ram)
                 n += 1
-            entityVector = norm(entityVector)  # 归一化
-            entityVectorList[entity] = entityVector
+            wordVector = norm(wordVector)  # 归一化
+            wordVectorList[word] = wordVector
+
+        # 将句子中的单词向量取平均作为句子向量
+        for item in self.sentenceDict.items():
+            key = item[0]
+            sentence = item[1]
+
+            sentence_list = sentence.split()
+            sentenceVector = np.zeros((self.dim))
+            for val in sentence_list:
+                if val not in wordVectorList.keys():
+                    val = '__UNK__'
+                sentenceVector += wordVectorList[val]
+
+            sentenceVector = sentenceVector / len(sentence_list)
+            entityVectorList[key] = sentenceVector
+
         print("entityVector初始化完成，数量是%d" % len(entityVectorList))
         for relation in self.relationList:
             n = 0
@@ -50,6 +61,7 @@ class TransE:
             relationVector = norm(relationVector)  # 归一化
             relationVectorList[relation] = relationVector
         print("relationVectorList初始化完成，数量是%d" % len(relationVectorList))
+
         self.entityList = entityVectorList
         self.relationList = relationVectorList
 
@@ -66,8 +78,8 @@ class TransE:
             if cycleIndex % 100 == 0:
                 print("第%d次循环" % cycleIndex)
                 print(self.loss)
-                self.writeRelationVector("result/relationVector.txt")
-                self.writeEntilyVector("result/entityVector.txt")
+                self.writeRelationVector("result/relationVector_pdtb.txt")
+                self.writeEntilyVector("result/entityVector_pdtb.txt")
                 self.loss = 0
 
     def getSample(self, size):
@@ -244,15 +256,31 @@ def openTrain(dir, sp="\t"):
     return num, list
 
 
+def openSentenceEntity(dir, sp="\t"):
+    dict = {}
+    with open(dir) as file:
+        lines = file.readlines()
+        for line in lines:
+            line_sp = line.strip().split(sp)
+            if len(line_sp) > 1:
+                dict[line_sp[0]] = line_sp[1]
+
+    return dict
+
+
 if __name__ == '__main__':
-    dirEntity = "KBdata/PDTB/sentence_entity.txt"
+    # v_builder = VocabBuilder(path_file='KBdata/PDTB/train_pdtb.tsv')
+    # v_builder.save_word_list(path_file='KBdata/PDTB/train_pdtb.tsv', word_list_path='KBdata/PDTB/word_list.txt')
+    dirEntity = "KBdata/PDTB/word_list.txt"
     entityIdNum, entityList = openDetailsAndId(dirEntity)
-    dirRelation = "KBdata/FB15k/relation2id.txt"
+    dirRelation = "KBdata/PDTB/relation2id.txt"
     relationIdNum, relationList = openDetailsAndId(dirRelation)
     dirTrain = "KBdata/PDTB/train.txt"
     tripleNum, tripleList = openTrain(dirTrain)
+    dirSentenceEntity = "KBdata/PDTB/sentence_entity.txt"
+    sentenceDict = openSentenceEntity(dirSentenceEntity)
     print("打开TransE")
-    transE = TransE(entityList, relationList, tripleList, margin=1, dim=100)
+    transE = TransE(entityList, relationList, tripleList, sentenceDict, margin=1, dim=100)
     print("TranE初始化")
     transE.initialize()
     transE.transE(15000)

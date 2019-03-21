@@ -14,7 +14,7 @@ def create_word_index(glove_path, embedding_size, min_samples):
         ed_size = embed.size(1)
         is_glove = True
     else:
-        v_builder = VocabBuilder(path_file=PROCESSED_DATA_PATH + '/train_pdtb.txt')
+        v_builder = VocabBuilder(path_file=PROCESSED_DATA_PATH + '/train_pdtb.tsv')
         d_word_index, embed = v_builder.get_word_index(min_sample=min_samples)
         ed_size = embedding_size
         is_glove = False

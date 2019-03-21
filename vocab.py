@@ -37,6 +37,17 @@ class VocabBuilder(object):
         print('Original Vocab size:{}'.format(len(word_count)))
         return word_count
 
+    def save_word_list(self, path_file, word_list_path, tokenizer=ut._tokenize):
+        df = pd.read_csv(path_file, delimiter='\t')
+        # tokenize
+        df['body'] = df['body'].apply(tokenizer)
+
+        word_list = [tkn for sample in df['body'].values.tolist() for tkn in sample] + ['__PADDING__', '__UNK__']
+        word_list = set(word_list)
+        with open(word_list_path, 'w', encoding='utf-8') as f:
+            for word in word_list:
+                f.write(word + '\n')
+
     def get_word_index(self, min_sample=1, padding_marker='__PADDING__', unknown_marker='__UNK__', ):
         """
         create word-to-index mapping. Padding and unknown are added to last 2 indices.
