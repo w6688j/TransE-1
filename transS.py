@@ -30,6 +30,7 @@ class TransS:
             wordVectorList[word] = wordVector
 
         self.wordVectorList = wordVectorList
+        print("wordVectorList初始化完成，数量是%d" % len(wordVectorList))
 
     def initSentenceEntityList(self):
         sentenceEntityList = {}
