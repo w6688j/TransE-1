@@ -82,6 +82,7 @@ class TransS:
                 self.writeRelationVector("result/relationVector_pdtb.txt")
                 self.writeEntilyVector("result/sentenceEntityVector_pdtb.txt")
                 self.writeWordEntilyVector("result/wordEntityVector_pdtb.txt")
+                print("wordVectorList数量是%d" % len(self.wordVectorList))
                 self.loss = 0
 
     def getSample(self, size):
