@@ -108,4 +108,4 @@ for sentenceVector in sentenceVectorList:
     sum += 1
 
     print('准确数' + str(count))
-    print('准确度' + str(count / sum))
+    print('准确度 %.4f' % (count / sum))
