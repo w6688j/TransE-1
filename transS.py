@@ -452,7 +452,7 @@ if __name__ == '__main__':
     sentenceDict = openSentenceEntity(dirSentenceEntity)
 
     print("打开TransS")
-    transS = TransS(wordList, relationList, tripleList, sentenceDict, margin=1, dim=100)
+    transS = TransS(wordList, relationList, tripleList, sentenceDict, margin=1, learingRate=0.01, dim=100)
     print("TransS初始化")
     transS.initialize()
     transS.transS(15000)
