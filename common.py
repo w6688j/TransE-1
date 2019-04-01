@@ -52,3 +52,17 @@ def get_results_path(is_glove, embedding_size):
         os.makedirs(results_path)
 
     return results_path
+
+
+def get_sentence_by_key(key):
+    with open('KBdata/PDTB/sentence_entity.txt', 'r', encoding='utf-8') as f:
+        sentences = f.readlines()
+
+    for item in sentences:
+        item_list = item.split('\t')
+        if key == item_list[0]:
+            return item_list[1]
+
+
+def get_sentence_len_by_key(key):
+    return len(get_sentence_by_key(key))

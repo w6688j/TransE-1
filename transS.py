@@ -3,6 +3,8 @@ from random import uniform, sample
 
 import numpy as np
 
+from common import *
+
 
 class TransS:
     def __init__(self, wordList, relationList, tripleList, sentenceDict, margin=1, learingRate=0.00001, dim=10,
@@ -283,13 +285,17 @@ class TransS:
                      headEntityKeyWithCorruptedTriplet,
                      tailEntityKeyWithCorruptedTriplet):
 
-        self.updateWordVector(self.sentenceEntityList[headEntityKey], tempPositive, 'plus')
-        self.updateWordVector(self.sentenceEntityList[tailEntityKey], tempPositive, 'reduce')
+        self.updateWordVector(self.sentenceEntityList[headEntityKey],
+                              tempPositive / get_sentence_len_by_key(headEntityKey),
+                              'plus')
+        self.updateWordVector(self.sentenceEntityList[tailEntityKey],
+                              tempPositive / get_sentence_len_by_key(tailEntityKey),
+                              'reduce')
         self.updateWordVector(self.sentenceEntityList[headEntityKeyWithCorruptedTriplet],
-                              tempNegtative,
+                              tempNegtative / get_sentence_len_by_key(headEntityKeyWithCorruptedTriplet),
                               'reduce')
         self.updateWordVector(self.sentenceEntityList[tailEntityKeyWithCorruptedTriplet],
-                              tempNegtative,
+                              tempNegtative / get_sentence_len_by_key(tailEntityKeyWithCorruptedTriplet),
                               'plus')
 
         # 重新计算sentence的word向量平均值
